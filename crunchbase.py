@@ -1,4 +1,3 @@
-# Python 2 or 3?
 import time
 import concurrent.futures
 import requests
