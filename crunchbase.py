@@ -6,19 +6,18 @@ from pprint import pprint
 CATEGORIES_URL = 'https://api.crunchbase.com/v/3/categories'
 ORGANIZATIONS_URL = 'https://api.crunchbase.com/v/3/organizations'
 KEY = 'eacbc749ec28b08ddc8cd1d0a1846973'
-RATE_LIMIT_FACTOR = .4
+RATE_LIMIT_FACTOR = 5
 
 # Fetch list of all categories
 def get_categories():
   return requests.get(CATEGORIES_URL + '?user_key=' + KEY).json()['data']['items']
 
-# Fetch all organizations in a category
+# Fetch & paginate through all organizations in a category
 def get_organizations_for_category(category):
   url = ORGANIZATIONS_URL + '?category_uuids=' + category['uuid'] + '&user_key=' + KEY
   organizationsList = []
   page = 1
   while 1==1:
-    #time.sleep(RATE_LIMIT_FACTOR)
     print('getting organizations page ' + str(page) + ' for category ' + category['properties']['name'])
     try:
       response = requests.get(url + '&page=' + str(page))
@@ -27,12 +26,12 @@ def get_organizations_for_category(category):
         organizationsList.append(organization)
     except Exception as e:
       print('Error requesting ' + category['properties']['name'] + ' page ' + str(page) + '\n' + str(response.content))
+      time.sleep(RATE_LIMIT_FACTOR)
       continue # Retry the request
     page += 1
     if page > organizations['data']['paging']['number_of_pages']:
       break
-  return organizationsList, organizations['data']['paging']['number_of_pages']  # Return the organizations, and the number of pages 
-                                                                                # (= number of requests made for that category)
+  return organizationsList, organizations['data']['paging']['number_of_pages']  # Return the organizations, and the number of pages (equal to # of requests sent)
 
 # For each category, fetch all organizations, write category-organization mapping to file
 def run(categories):
