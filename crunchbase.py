@@ -6,7 +6,7 @@ from pprint import pprint
 CATEGORIES_URL = 'https://api.crunchbase.com/v/3/categories'
 ORGANIZATIONS_URL = 'https://api.crunchbase.com/v/3/organizations'
 KEY = 'eacbc749ec28b08ddc8cd1d0a1846973'
-RATE_LIMIT_FACTOR = 5
+RATE_LIMIT_FACTOR = 25
 
 # Fetch list of all categories
 def get_categories():
@@ -51,7 +51,7 @@ def run(categories):
           REQUESTS_SUBTOTAL += data[1]
           print('Requests subtotal: ' + str(REQUESTS_SUBTOTAL))
           for company in organizations:
-            outputFile.write(str(category['uuid'] + ', ' + company['uuid'] + '\n'))
+            outputFile.write(category['properties']['name'] + ', ' + category['uuid'] + ', ' + company['properties']['name'] + ', ' + company['uuid'] + '\n')
         except Exception as exc:
           print('%r generated an exception: %s' % (category, exc))
 
